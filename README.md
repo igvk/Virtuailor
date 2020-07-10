@@ -91,7 +91,7 @@ The plugin is licensed under the GNU GPL v3 license.
 
 
 # Simple class informer by Greg.
-* For simplicity of maintenace, I integrated BPCond.py and BPCon64.py to BPCondIntel.py.
-* BPCondIntel.py parses RTTI in read-only section to obtain demangled class name. Currently, the script was only tested on GCC(Linux) and MSVC compilers. 
+* For simplicity of maintenace, I integrated BPCond.py and BPCon64.py to one file BPCondIntel.py.
+* BPCondIntel.py parses RTTI in read-only section to obtain demangled class name. However, the script was only tested on GCC(Linux) and MSVC(Windows) compilers. 
 
   
