@@ -22,11 +22,13 @@ def get_fixed_name_for_object(address, prefix=''):
       !! In case the object (in this case function) doesn't starts with "sub_" the returned name will be the old name
     """
     name = idc.get_name(int(address))
+    old_name = name
     demangle_name = idc.demangle_name(name, idc.get_inf_attr(idc.INF_LONG_DEMNAMES))
     calc_func_name = int(address) - idc.get_segm_start(int(address))
     if (name[:4] == "sub_" or name == "" or demangle_name) and ('vtable' not in name):
-        name = prefix + hex(calc_func_name)[2:].rstrip('L') + 'h'  # The name will be the offset from the beginning of the segment
-    print('[?] new name: %s 0x%X' % (name, int(address)))
+        name = prefix + '{:X}h'.format(calc_func_name)  # The name will be the offset from the beginning of the segment
+    if name != old_name:
+        print('[?] new name: %s 0x%X' % (name, int(address)))
 
     return name
 
@@ -53,7 +55,7 @@ def add_comment_to_struct_members(struct_id, vtable_func_offset, start_address):
     cur_cmt = idc.get_member_cmt(struct_id, vtable_func_offset, 1)
     new_cmt = ""
     if cur_cmt:
-        if cur_cmt[:23] != "Was called from offset:":
+        if cur_cmt[:23] != "Was called from offset:" or hex(start_address) in cur_cmt:
             new_cmt = cur_cmt
         else:
             new_cmt = cur_cmt + ", " + hex(start_address)
@@ -241,7 +243,7 @@ if offset == "*":
 try:
     do_logic(virtual_call_addr, register_vtable, offset)
 except Exception as e:
-    print("Error! at BP address: 0x%X (%s)", get_pc_value(), e)
+    print("Error! at BP address: 0x%X (%s)" % (get_pc_value(), e))
     import sys
     import traceback
     error_class = e.__class__.__name__

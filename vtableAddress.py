@@ -104,7 +104,7 @@ def get_con2_var_or_num(i_cnt, cur_addr):
 
 def get_condition_file(fname):
     for fpth in sys.path:
-        condition_fpath = fpth + '//' + fname
+        condition_fpath = os.path.join(fpth, fname)
         if os.path.exists(condition_fpath):
             return condition_fpath
     return None
@@ -120,7 +120,7 @@ def get_bp_condition(start_addr, register_vtable, offset):
 
     #condition_file = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), file_name)
     condition_file = get_condition_file(file_name)
-    print('condtion file {}'.format(condition_file))
+    print('condition file {}'.format(condition_file))
 
     if arch != "Error" or (arch == "ARM" and not is_64):
         with open(condition_file, 'r') as f1:
