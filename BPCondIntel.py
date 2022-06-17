@@ -9,7 +9,7 @@ import idautils
 
 value_of_addr = lambda ea: idc.read_dbg_qword(ea) if idaapi.get_inf_structure().is_64bit() else idc.get_wide_dword(ea)
 get_pc_value = lambda: int(idc.get_reg_value('rip')) if idaapi.get_inf_structure().is_64bit() else int(idc.get_reg_value('eip'))
-get_segment_range = lambda name: (idaapi.get_segm_by_name(name).startEA, idaapi.get_segm_by_name(name).endEA)
+get_segment_range = lambda name: (idaapi.get_segm_by_name(name).start_ea, idaapi.get_segm_by_name(name).end_ea)
 get_ptr_size = lambda: 8 if idaapi.get_inf_structure().is_64bit() else 4
 
 
@@ -21,12 +21,12 @@ def get_fixed_name_for_object(address, prefix=''):
     :return: returns the new name of the object with calculated offset from the base addr -> "prefix + offset + suffix"
       !! In case the object (in this case function) doesn't starts with "sub_" the returned name will be the old name
     """
-    name = idc.Name(int(address))
-    demangle_name = idc.demangle_name(name, idc.get_inf_attr(idc.INF_LONG_DN))
+    name = idc.get_name(int(address))
+    demangle_name = idc.demangle_name(name, idc.get_inf_attr(idc.INF_LONG_DEMNAMES))
     calc_func_name = int(address) - idc.get_segm_start(int(address))
     if (name[:4] == "sub_" or name == "" or demangle_name) and ('vtable' not in name):
         name = prefix + hex(calc_func_name)[2:].rstrip('L') + 'h'  # The name will be the offset from the beginning of the segment
-    print '[?] new name: %s 0x%X' % (name, int(address))
+    print('[?] new name: %s 0x%X' % (name, int(address)))
 
     return name
 
@@ -88,7 +88,7 @@ def add_all_functions_to_struct(start_address, struct_id, p_vtable_addr, offset)
         if vtable_func_value < start or vtable_func_value > end:
             break
         v_func_name = idc.get_func_name(vtable_func_value)
-        #print '[!] vtable_func_value: %X; v_func_name: %s' % (vtable_func_value, v_func_name)
+        #print('[!] vtable_func_value: %X; v_func_name: %s' % (vtable_func_value, v_func_name))
         if v_func_name == '':
             vtable_func_value = value_of_addr(vtable_func_value)
             v_func_name = idc.get_func_name(vtable_func_value)
@@ -132,7 +132,7 @@ def get_rdata_segment():
         if rdata_seg:
             break
     if not rdata_seg:
-        print '[-] Read Only segment NOT found'
+        print('[-] Read Only segment NOT found')
         return None
     return rdata_seg
 
@@ -143,22 +143,22 @@ def get_derived_class(vptr):
     demangle_name = None
 
     if 'ELF' in ftype:
-        demangle_name = idc.demangle_name(idc.Name(value_of_addr(idc.prev_head(vptr))), idc.get_inf_attr(idc.INF_LONG_DN))
+        demangle_name = idc.demangle_name(idc.get_name(value_of_addr(idc.prev_head(vptr))), idc.get_inf_attr(idc.INF_LONG_DEMNAMES))
         if demangle_name:
             m = re.search("`typeinfo for'(.+)", demangle_name)
     elif 'PE' in ftype:
-        demangle_name = idc.demangle_name(idc.Name(vptr), idc.get_inf_attr(idc.INF_LONG_DN))
+        demangle_name = idc.demangle_name(idc.get_name(vptr), idc.get_inf_attr(idc.INF_LONG_DEMNAMES))
         if demangle_name:
             m = re.search("const (.+)::`vftable'", demangle_name)
     else:
-        print '[-] undefined file type: %s' % ftype
+        print('[-] undefined file type: %s' % ftype)
 
     if not demangle_name:
         return 'unknown_class', 'unknown'
     elif m:
         return m.group(1), demangle_name
     else:
-        print '[-] undefined demangled name %s at %X' % (demangle_name, vptr)
+        print('[-] undefined demangled name %s at %X' % (demangle_name, vptr))
         return 'unknown_class', demangle_name
 
 
@@ -184,8 +184,8 @@ def do_logic(virtual_call_addr, register_vtable, offset):
     p_vtable_addr, v_func_addr = get_vtable_and_vfunc_addr(is_brac, register_vtable, offset)
 
     rdata_seg = get_rdata_segment()
-    if not rdata_seg or p_vtable_addr < rdata_seg.startEA or p_vtable_addr > rdata_seg.endEA:
-        print '[-] virtual_call_addr: 0x%X, function address 0x%X NOT in .rdata' % (virtual_call_addr, p_vtable_addr)
+    if not rdata_seg or p_vtable_addr < rdata_seg.start_ea or p_vtable_addr > rdata_seg.end_ea:
+        print('[-] virtual_call_addr: 0x%X, function address 0x%X NOT in .rdata' % (virtual_call_addr, p_vtable_addr))
         return False
     print("[?] p_vtable_addr: %X, v_func_addr: %X" % (p_vtable_addr, v_func_addr))
 
@@ -210,8 +210,8 @@ def do_logic(virtual_call_addr, register_vtable, offset):
         # create the vtable struct
         create_vtable_struct(virtual_call_addr, vtable_name, p_vtable_addr, offset)
     comment = '%X -> %s::%s, vptr: %X' % (v_func_addr, class_name.split('_vtable')[0], v_func_name, p_vtable_addr)
-    #print '[?] '+ comment
-    idc.MakeRptCmt(virtual_call_addr, comment)
+    #print('[?] ' + comment)
+    idc.set_cmt(virtual_call_addr, comment, 1)
     return True
 
 

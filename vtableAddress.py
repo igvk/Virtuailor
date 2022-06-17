@@ -92,7 +92,7 @@ def get_con2_var_or_num(i_cnt, cur_addr):
             # In case the code has CFG -> ignores the function call before the virtual calls
             if "guard_check_icall_fptr" not in intr_func_name:
                 if "nullsub" not in intr_func_name:
-                    #intr_func_name = idc.Demangle(intr_func_name, idc.GetLongPrm(idc.INF_SHORT_DN))
+                    #intr_func_name = idc.demangle_name(intr_func_name, idc.get_inf_attr(idc.INF_SHORT_DEMNAMES))
                     print("Warning! At address 0x%08x: The vtable assignment might be in another function (Maybe %s),"
                           " could not place BP." % (virt_call_addr, intr_func_name))
                 cur_addr = start_addr
@@ -171,7 +171,7 @@ def write_vtable2file(start_addr):
         set_bp = False
     finally:
         if set_bp:
-            #start_addr = start_addr - idc.SegStart(start_addr)
+            #start_addr = start_addr - idc.get_segm_start(start_addr)
             if reg_vtable in REGISTERS:
                 print('[+] reg: %s, offset: %s, bp addr: 0x%X, caller addr: 0x%X' % (reg_vtable, offset, int(bp_address), start_addr))
                 cond = get_bp_condition(start_addr, reg_vtable, offset)
