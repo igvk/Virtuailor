@@ -1,6 +1,5 @@
 # Virtuailor - IDAPython tool for C++ vtables reconstruction 
 
-
 Virtuailor is an IDAPython tool that reconstructs vtables for C++ code written for intel architecture, both 32bit and 64bit code and AArch64 (New!).
 The tool constructed from 2 parts, static and dynamic.
 
@@ -89,3 +88,10 @@ REcon Brussels, Troopers, Warcon crews, Nana, @tmr232, @matalaz, @oryandp, @talk
 ## License
 
 The plugin is licensed under the GNU GPL v3 license.
+
+
+# Simple class informer by Greg.
+* For simplicity of maintenace, I integrated BPCond.py and BPCon64.py to one file BPCondIntel.py.
+* BPCondIntel.py parses RTTI in read-only section to obtain demangled class name. However, the script was only tested on GCC(Linux) and MSVC(Windows) compilers. 
+
+  

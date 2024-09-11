@@ -5,7 +5,7 @@ import idc
 
 
 class AddBreakPoint:
-    def __init__(self, addr, condition="", elang = "Python"):
+    def __init__(self, addr, condition="", elang="Python"):
         """
         :param addr: String type, 32 bit address
         :param condition: Condition type object
@@ -31,7 +31,7 @@ class AddBreakPoint:
 
 
 class Condition:
-    def __init__(self, type, cond_text = ''):
+    def __init__(self, type, cond_text=''):
         """
         the types of conditions are;
         get_return_address - 0
@@ -69,7 +69,7 @@ class Condition:
 
 
 def define_function_trace(adr):
-    return idc.set_bpt_attr(adr, idc.BPTATTR_FLAGS, idc.BPT_ENABLED | idc.BPT_TRACE | idc.BPT_TRACEON | idc.BPT_TRACE_FUNC) #idc.BPT_BRK |
+    return idc.set_bpt_attr(adr, idc.BPTATTR_FLAGS, idc.BPT_ENABLED | idc.BPT_TRACE | idc.BPT_TRACEON | idc.BPT_TRACE_FUNC)  #idc.BPT_BRK |
 
 
 def delete_bp(adr):
@@ -86,8 +86,6 @@ def get_bpt(adr):
     return bpt
 
 
-
-
 def add(ea, cond_user=''):
     """
     :param ea: Address of the breakpoint
@@ -101,4 +99,3 @@ def add(ea, cond_user=''):
     hook = AddBreakPoint(ea, cond)
     hook.set()
     return hook
-

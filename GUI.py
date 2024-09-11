@@ -2,6 +2,7 @@ import string
 import binascii
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+
 class VirtuailorBasicGUI(QtWidgets.QDialog):
     values_cb = None
     start_line = None
@@ -9,7 +10,7 @@ class VirtuailorBasicGUI(QtWidgets.QDialog):
     base_line = None
 
     def populate_form(self, defaults):
-        layout = QtWidgets.QVBoxLayout() # TODO implement exit()
+        layout = QtWidgets.QVBoxLayout()  # TODO implement exit()
         layout.addWidget(QtWidgets.QLabel("Virtuailor- \n\n Please Choose Address range (in hex)"))
         layout.addWidget(QtWidgets.QLabel("\n In case you would like to target all the binary, just leave the "
                                           "addresses in both start and end fields. \n "))
@@ -59,4 +60,3 @@ class VirtuailorBasicGUI(QtWidgets.QDialog):
     def on_button_clicked_cancel(self):
         self.start_line.text = "banana"
         self.close()
-
